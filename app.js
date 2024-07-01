@@ -1,10 +1,17 @@
-const express = require("express");
-const bodyParser = require("body-parser");
+require("dotenv").config()
 
-const placesRoutes = require("./routes/places-routes");
+const express = require("express");
+const morgan = require("morgan");
+const cookieParser = require("cookie-parser");
+const bodyParser = require("body-parser");
+const PORT = process.env.PORT;
+
+const placesRoutes = require("./routes/places.routes");
 
 const app = express();
 
-app.use(placesRoutes);
+app.use("/api/places", placesRoutes);
 
-app.listen(5005);
+app.listen(PORT, () => {
+    console.log(`Server listening on port ${PORT}`);
+});
