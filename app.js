@@ -1,4 +1,5 @@
-require("dotenv").config()
+require("dotenv").config();
+require("./config/dbConnect");
 
 const express = require("express");
 const morgan = require("morgan");
