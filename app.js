@@ -13,7 +13,8 @@ const usersRoutes = require("./routes/users.routes");
 const HttpError = require("./models/error");
 
 const app = express();
-
+const cors = require("cors");
+app.use(cors());
 app.use(bodyParser.json());
 
 app.use("/api/places", placesRoutes);
