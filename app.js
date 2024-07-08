@@ -1,38 +1,36 @@
-require("dotenv").config();
-require("./config/dbConnect");
-
 const express = require("express");
-const morgan = require("morgan");
-const cookieParser = require("cookie-parser");
-const bodyParser = require("body-parser");
-const PORT = process.env.PORT;
-
-const placesRoutes = require("./routes/places.routes");
-const usersRoutes = require("./routes/users.routes");
-
-const HttpError = require("./models/error");
-
 const app = express();
-const cors = require("cors");
-app.use(cors());
-app.use(bodyParser.json());
+const mongoose = require("mongoose");
+const dotenv = require("dotenv");
+const helmet = require("helmet");
+const morgan = require("morgan")
+const cors = require("cors")
+const userRoute = require("./routes/users.routes")
+const authRoute = require("./routes/auth.routes")
 
-app.use("/api/places", placesRoutes);
-app.use("/api/users", usersRoutes);
+require("dotenv").config()
+require("./config/dbConfig");
+const PORT = process.env.PORT
 
-app.use((req, res, next) => {
-    const error = new HttpError("Could not find this route.", 404);
-    throw error;
-});
+//Middleware
+app.use(cors())
+app.use(express.json())
+app.use(helmet())
+app.use(morgan("common"))
+app.use(express.urlencoded({ extended: true }))
 
-app.use((error, req, res, next) => {
-    if (res.headerSent) { //checking if a response has already been sent
-        return next(error);
-    }
-    res.status(error.code || 500);
-    res.json({message: error.message || "An unknown error occured!"});
-})
+app.use("/api/users", userRoute)
+app.use("/api/auth", authRoute)
+
+
+// app.get("/", (req, res, next) =>{
+//     res.status(200).json({ message : "Welcome to homepage" })
+// })
+
+// app.get("/users", (req, res, next) =>{
+//     res.status(200).json({ message : "Welcome to users page" })
+// })
 
 app.listen(PORT, () => {
-    console.log(`Server listening on port ${PORT}`);
-});
+	console.log(`Server is  running on http://localhost:${PORT}`)
+})

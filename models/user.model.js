@@ -1,22 +1,63 @@
 const { Schema, model } = require("mongoose");
-const uniqueValidator = require("mongoose-unique-validator"); //to check if email already exist
 
 const userSchema = new Schema(
     {
-        name: { type: String, required: true },
-        email: { type: String, required: true, unique: true },
-        password: { type: String, required: true, minlength: 8 },
-        image: { type: String },
-        places: [{
-			type: Schema.Types.ObjectId,
-			ref: "Place",
-			required: true,
-		}],
+        username: {
+            type: String,
+            required: true,
+            minLength: 3,
+            maxLength: 20,
+            unique: true
+        },
+        email: {
+            type: String,
+            required: true,
+            unique: true
+        },
+        password: {
+            type: String,
+            required: true,
+            minLength: 6,
+        },
+        image: {
+            type: String,
+            default: "https://cdn-icons-png.flaticon.com/512/149/149071.png"
+        },
+        coverImage: {
+            type: String,
+            default: ""
+        },
+        followers: {
+            type: [Schema.Types.Mixed],
+            default: []
+        },
+        following: {
+            type: [Schema.Types.Mixed],
+            default: []
+        },
+        isAdmin: {
+            type: Boolean,
+            default: false
+        },
+        description: {
+            type: String,
+            maxLength: 100
+        },
+        city: {
+            type: String,
+            maxLength: 50
+        },
+        from: {
+            type: String,
+            maxLength: 50
+        },
+        relationship: {
+            type: Number,
+            enum: [1, 2, 3]
+        }
     },
-    { timestamps: true }
-);
-
-userSchema.plugin(uniqueValidator);
+    { timestamps : true }
+)
 
 const User = model("User", userSchema)
 module.exports = User;
