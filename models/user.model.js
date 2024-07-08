@@ -17,7 +17,6 @@ const userSchema = new Schema(
         password: {
             type: String,
             required: true,
-            minLength: 6,
         },
         image: {
             type: String,
@@ -27,14 +26,14 @@ const userSchema = new Schema(
             type: String,
             default: ""
         },
-        followers: {
-            type: [Schema.Types.Mixed],
-            default: []
-        },
-        following: {
-            type: [Schema.Types.Mixed],
-            default: []
-        },
+        // followers: {
+        //     type: [Schema.Types.ObjectId],
+        //     default: []
+        // },
+        // following: {
+        //     type: [Schema.Types.ObjectId],
+        //     default: []
+        // },
         isAdmin: {
             type: Boolean,
             default: false
@@ -42,18 +41,6 @@ const userSchema = new Schema(
         description: {
             type: String,
             maxLength: 100
-        },
-        city: {
-            type: String,
-            maxLength: 50
-        },
-        from: {
-            type: String,
-            maxLength: 50
-        },
-        relationship: {
-            type: Number,
-            enum: [1, 2, 3]
         }
     },
     { timestamps : true }

@@ -1,49 +1,83 @@
 const router = require("express").Router();
 const User = require("../models/user.model");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const isAuth = require("../middlewares/isAuthenticated");
 const SALT = 12
 
 //Signup
 router.post("/signup", async (req, res, next) => {
     
-
     try {
-        //generate new password
-        const hashedPassword = await bcrypt.hash(req.body.password, SALT)
+        const { username, email, password } = req.body
+        if (!username || !email || !password) {
+			return res
+				.status(400)
+				.json({ message: "username, email and password are mandatory." })
+		}
+        
+        const foundUser = await User.findOne({$or: [{username}, {email}]})
+        if (foundUser) {
+            return res
+            .status(400)
+            .json({message: "User already exist with this email / username"})
+        } 
+        //generate hashed password in db
+        const hashedPassword = await bcrypt.hash(password, SALT)
 
         //create new user
-        const newUser = new User({
-        username: req.body.username,
-        email: req.body.email,
-        password: hashedPassword
+        const createdUser = await User.create({
+        username,
+        email,
+        password: hashedPassword,
         })
-
-        //Save user and return response
-        const user = await newUser.save()
-        res.status(201).json(user)
-    } catch (err) {
-        console.log(err)
+        
+        res.status(201).json({
+            message: `Created user ${createdUser.username} with id ${createdUser._id}`,
+        })
+    } catch (error) {
+        console.log(error)
     }
 });
 
 //Login
 router.post("/login", async (req, res, next) => {
     try {
-        const user = await User.findOne({email:req.body.email});
-        if (!user) {
-            return res.status(400).json({message: "Wrong credentials"});
+        const { email, password } = req.body       
+        if (!email || !password) {
+            return res.status(400).json({message: "Fill all your informations"});
         } 
 
-        const validPassword = await bcrypt.compare(req.body.password, user.password)
-        if (!validPassword) {
-            return res.status(400).json({message: "Wrong credentials"});
+        const foundUser = await User.findOne({ email }, { email: 1, password: 1 });
+        if (!foundUser) {
+            return res.status(400).json({message: "Wrong email or password"});
         }
         
-        res.status(200).json(user)
+        const correctPassword = await bcrypt.compare(password, foundUser.password)
+        if (!correctPassword) {
+            return res.status(400).json({ message: "Wrong email or password"})
+        }
+
+        const payload = { id: foundUser._id}
+        const token = jwt.sign(payload, process.env.TOKEN_SECRET, {
+            expiresIn: "1d",
+            algorithm: "HS256",
+        })
+
+        res.json({ accessToken: token})
     } catch (err) {
         console.log(err)
     }  
 })
 
+//Verify
+router.get('/verify', isAuth, async (req, res, next) => {
+    try {
+        const user = await User.findById(req.userId)
+        res.json(user)
+    } catch (err) {
+        next(err)
+    }
+})
 
 module.exports = router

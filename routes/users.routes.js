@@ -1,29 +1,17 @@
 const router = require("express").Router();
 const User = require("../models/user.model")
-const bcrypt = require("bcrypt")
-const SALT = 12;
+const Post = require("../models/post.model")
 
-//Update user
-router.put(":/id", async(req, res, next) => {
-    if (req.body.userId === req.params.id || req.user.isAdmin) {
-        if (req.body.password) {
-            try {
-                req.body.password = await bcrypt.hash(req.body.password, SALT)
-            } catch (err) {
-                return res.status(500).json(err)
-            }
-        }
-        try {
-            const user = await User.findByIdAndUpdate(req.params.id,
-                {$set: req.body} //set all input inside body
-             )
-             res.status(200).json({message: "Account has been updated"})
+//Get user
+router.get("/:id", async(req, res, next) => {
+    try {
+        const { id } = req.params
+        const oneUser = await User.findOne({ _id: id })
+        const relatedPosts = await Post.find({ userId: id })
+        res.json({ user: oneUser, pets: relatedPosts })
         } catch (err) {
-            return res.status(500).json(err)
+            console.log(err)
         }
-    } else {
-        return res.status(403).json({message: "You can only update your account !"})
-    }
 })
 
 //Delete user
@@ -31,8 +19,8 @@ router.put(":/id", async(req, res, next) => {
 //follow a user
 //unfollow a user
 
-router.get("/", (req, res, next) => {
-    res.status(200).json({ message : "Welcome to users page" })
-})
+// router.get("/", (req, res, next) => {
+//     res.status(200).json({ message : "Welcome to users page" })
+// })
 
 module.exports = router
