@@ -62,9 +62,9 @@ router.post(
 
 router.put("/:postId", isAuth, isAdmin, async (req, res, next) => {
   try {
-    const { image, title, description } = req.body;
+    const { title, description } = req.body;
     const { postId } = req.params;
-    const postToUpdate = { image, title, description };
+    const postToUpdate = { title, description };
     let updatedPost;
     // Find and update
     if (req.isAdmin) {
