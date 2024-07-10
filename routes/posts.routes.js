@@ -9,7 +9,7 @@ const fileUploader = require("../config/cloudinaryConfig");
 
 router.get("/", isAuth, async (req, res, next) => {
   try {
-    const posts = await Post.find().populate("userId");
+    const posts = await Post.find().sort({ createdAt: -1 }).populate("userId");
     res.json(posts);
   } catch (error) {
     return next(error);
@@ -65,18 +65,21 @@ router.put("/:postId", isAuth, isAdmin, async (req, res, next) => {
     const { title, description } = req.body;
     const { postId } = req.params;
     const postToUpdate = { title, description };
+    console.log("here's request body", req.body);
     let updatedPost;
     // Find and update
     if (req.isAdmin) {
       updatedPost = await Post.findByIdAndUpdate(postId, postToUpdate, {
         new: true,
       });
+      console.log("The user is admin", updatedPost);
     } else {
       updatedPost = await Post.findOneAndUpdate(
         { _id: postId, userId: req.userId },
         postToUpdate,
         { new: true }
       );
+      console.log("The user is not admin", updatedPost);
     }
 
     if (!updatedPost) {

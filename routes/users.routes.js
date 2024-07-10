@@ -8,7 +8,7 @@ router.get("/:id", async (req, res, next) => {
     const { id } = req.params;
     const oneUser = await User.findOne({ _id: id });
     const relatedPosts = await Post.find({ userId: id });
-    res.json({ user: oneUser, pets: relatedPosts });
+    res.json({ user: oneUser, posts: relatedPosts });
   } catch (err) {
     console.log(err);
   }
