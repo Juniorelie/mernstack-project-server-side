@@ -92,6 +92,61 @@ router.put("/:postId", isAuth, isAdmin, async (req, res, next) => {
   }
 });
 
+// Like a post
+router.post("/:postId/like", isAuth, async (req, res, next) => {
+  const { postId } = req.params;
+  if (!isValidObjectId(postId)) {
+    return res.status(400).json({ message: "Invalid post ID" });
+  }
+  try {
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    if (post.likes.includes(req.userId)) {
+      return res.status(400).json({ message: "Post already liked" });
+    }
+
+    post.likes.push(req.userId);
+    await post.save();
+    res.status(200).json(post);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Unlike a post
+router.post("/:postId/unlike", isAuth, async (req, res, next) => {
+  const { postId } = req.params;
+  if (!isValidObjectId(postId)) {
+    return res.status(400).json({ message: "Invalid post ID" });
+  }
+  try {
+    const post = await Post.findByIdAndUpdate(
+      postId,
+      {
+        $pull: { likes: req.userId },
+      },
+      { new: true }
+    );
+    // if (!post) {
+    //   return res.status(404).json({ message: "Post not found" });
+    // }
+
+    // const likeIndex = post.likes.indexOf(req.userId);
+    // if (likeIndex === -1) {
+    //   return res.status(400).json({ message: "Post not liked" });
+    // }
+
+    // post.likes.splice(likeIndex, 1);
+    // await post.save();
+    res.status(200).json(post);
+  } catch (error) {
+    next(error);
+  }
+});
+
 // Delete a post
 
 router.delete("/:postId", isAuth, async (req, res, next) => {
