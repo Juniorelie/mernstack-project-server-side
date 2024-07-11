@@ -35,7 +35,7 @@ router.post("/signup", async (req, res, next) => {
       message: `Created user ${createdUser.username} with id ${createdUser._id}`,
     });
   } catch (error) {
-    console.log(error);
+    next(error);
   }
 });
 
@@ -64,8 +64,8 @@ router.post("/login", async (req, res, next) => {
     });
 
     res.json({ accessToken: token });
-  } catch (err) {
-    console.log(err);
+  } catch (error) {
+    next(error);
   }
 });
 

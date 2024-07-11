@@ -9,8 +9,8 @@ router.get("/:id", async (req, res, next) => {
     const oneUser = await User.findOne({ _id: id });
     const relatedPosts = await Post.find({ userId: id });
     res.json({ user: oneUser, posts: relatedPosts });
-  } catch (err) {
-    console.log(err);
+  } catch (error) {
+    next(error);
   }
 });
 

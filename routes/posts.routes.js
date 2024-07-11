@@ -28,7 +28,7 @@ router.get("/:postId", async (req, res, next) => {
   res.json({ post: onePost });
   try {
   } catch (error) {
-    console.log(error);
+    next(error);
   }
 });
 
@@ -53,7 +53,7 @@ router.post(
     res.status(201).json(createdPost);
     try {
     } catch (error) {
-      console.log(error);
+      next(error);
     }
   }
 );
@@ -88,7 +88,7 @@ router.put("/:postId", isAuth, isAdmin, async (req, res, next) => {
 
     res.status(202).json(updatedPost);
   } catch (error) {
-    console.log(error);
+    next(error);
   }
 });
 
@@ -155,7 +155,7 @@ router.delete("/:postId", isAuth, async (req, res, next) => {
     await Post.findOneAndDelete({ _id: postId, userId: req.userId });
     res.sendStatus(204);
   } catch (error) {
-    console.log(error);
+    next(error);
   }
 });
 
