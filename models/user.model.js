@@ -18,14 +18,18 @@ const userSchema = new Schema(
             type: String,
             required: true,
         },
+        posts: [{
+            type: Schema.Types.ObjectId,
+            ref: 'Post'
+        }],
         image: {
             type: String,
             default: "https://cdn-icons-png.flaticon.com/512/149/149071.png"
         },
-        coverImage: {
-            type: String,
-            default: ""
-        },
+        // coverImage: {
+        //     type: String,
+        //     default: ""
+        // },
         // followers: {
         //     type: [Schema.Types.ObjectId],
         //     default: []
@@ -38,10 +42,10 @@ const userSchema = new Schema(
             type: Boolean,
             default: false
         },
-        description: {
-            type: String,
-            maxLength: 100
-        }
+        // description: {
+        //     type: String,
+        //     maxLength: 100
+        // }
     },
     { timestamps : true }
 )
